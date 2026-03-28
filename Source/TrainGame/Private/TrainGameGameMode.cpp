@@ -3,6 +3,7 @@
 #include "TrainGameGameMode.h"
 #include "TrainGameCharacter.h"
 #include "TrainGamePlayerController.h"
+#include "TrainHUD.h"
 
 ATrainGameGameMode::ATrainGameGameMode()
 {
@@ -11,4 +12,7 @@ ATrainGameGameMode::ATrainGameGameMode()
 
 	// set default controller to our C++ controller
 	PlayerControllerClass = ATrainGamePlayerController::StaticClass();
+
+	// set default HUD class
+	HUDClass = ATrainHUD::StaticClass();
 }

@@ -1,28 +1,29 @@
 #include "TrainEngine.h"
 
-ATrainEngine::ATrainEngine()
+UTrainEngineComponent::UTrainEngineComponent()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = true;
 	CurrentFuel = 50.0f;
 }
 
-void ATrainEngine::BeginPlay()
+void UTrainEngineComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void ATrainEngine::Tick(float DeltaTime)
+void UTrainEngineComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::Tick(DeltaTime);
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (CurrentFuel > 0.0f)
 	{
 		CurrentFuel -= ConsumptionRate * DeltaTime;
 		CurrentFuel = FMath::Clamp(CurrentFuel, 0.0f, MaxFuel);
+		OnFuelChange.Broadcast(CurrentFuel, MaxFuel);
 	}
 }
 
-void ATrainEngine::Interact_Implementation(AActor* Interactor)
+void UTrainEngineComponent::Interact_Implementation(AActor* Interactor)
 {
 	// Logic for adding fuel to the engine when interacted with.
 	// Typically, the player would need to have a fuel item and that would be consumed.
@@ -30,12 +31,14 @@ void ATrainEngine::Interact_Implementation(AActor* Interactor)
 	AddFuel(10.0f);
 }
 
-FText ATrainEngine::GetInteractionName_Implementation() const
+FText UTrainEngineComponent::GetInteractionName_Implementation() const
 {
 	return NSLOCTEXT("TrainGame", "InteractEngine", "Stoke the Engine");
 }
 
-void ATrainEngine::AddFuel(float Amount)
+void UTrainEngineComponent::AddFuel(float Amount)
 {
 	CurrentFuel = FMath::Clamp(CurrentFuel + Amount, 0.0f, MaxFuel);
+
+	OnFuelAdded.Broadcast(CurrentFuel, MaxFuel);
 }

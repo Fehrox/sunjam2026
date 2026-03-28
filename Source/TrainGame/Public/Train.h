@@ -5,7 +5,7 @@
 #include "Train.generated.h"
 
 class ATrainTrack;
-class ATrainEngine;
+class UTrainEngineComponent;
 
 UCLASS()
 class TRAINGAME_API ATrain : public AActor
@@ -24,14 +24,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Train")
 	ATrainTrack* CurrentTrack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Train")
-	ATrainEngine* Engine;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Train")
+	UTrainEngineComponent* Engine;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Train")
 	float BaseSpeed = 500.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Train")
 	float DistanceAlongTrack = 0.0f;
+
+	UFUNCTION(BLueprintCallable, Category = "Train")
+	void InitialiseTrain(ATrainTrack* StartingTrack);
 
 private:
 	void UpdatePositionAlongTrack(float DeltaTime);

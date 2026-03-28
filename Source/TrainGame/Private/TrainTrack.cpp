@@ -67,6 +67,7 @@ void ATrainTrack::UpdateSplineMeshes()
 		SplineMesh->SetStartAndEnd(StartPos, StartTangent, EndPos, EndTangent);
 		
 		// Optional: Collision settings
-		SplineMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		//SplineMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		SplineMesh->SetCollisionProfileName(FName("NoCollision"));
 	}
 }

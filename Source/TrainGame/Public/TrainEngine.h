@@ -1,28 +1,37 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Components/SceneComponent.h"
 #include "InteractionInterface.h"
 #include "TrainEngine.generated.h"
 
-UCLASS()
-class TRAINGAME_API ATrainEngine : public AActor, public IInteractable
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTGFuelChangeDelegate, float, CurrentFuel, float, MaxFuel);
+
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class TRAINGAME_API UTrainEngineComponent : public USceneComponent, public IInteractable
 {
 	GENERATED_BODY()
 
 public:
-	ATrainEngine();
+	UTrainEngineComponent();
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Engine")
+	FTGFuelChangeDelegate OnFuelChange;
+
+	UPROPERTY(BlueprintAssignable, Category = "Engine")
+	FTGFuelChangeDelegate OnFuelAdded;
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void Tick(float DeltaTime) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Engine")
 	float MaxFuel = 100.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Engine")
 	float CurrentFuel = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Engine")

@@ -6,6 +6,11 @@
 ATrain::ATrain()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+
+	Engine = CreateDefaultSubobject<UTrainEngineComponent>(TEXT("Engine"));
+	Engine->SetupAttachment(RootComponent);
 }
 
 void ATrain::BeginPlay()
@@ -20,6 +25,12 @@ void ATrain::Tick(float DeltaTime)
 	if (CurrentTrack && Engine)
 	{
 		UpdatePositionAlongTrack(DeltaTime);
+	}
+}
+
+void ATrain::InitialiseTrain(ATrainTrack* StartingTrack) {
+	if (StartingTrack != nullptr) {
+		CurrentTrack = StartingTrack;
 	}
 }
 
