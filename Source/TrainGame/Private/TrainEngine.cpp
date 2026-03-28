@@ -1,4 +1,6 @@
 #include "TrainEngine.h"
+#include "TrainResource.h"
+#include "TrainResourceData.h"
 
 UTrainEngineComponent::UTrainEngineComponent()
 {
@@ -51,9 +53,26 @@ void UTrainEngineComponent::AddFuel(float Amount)
 
 void UTrainEngineComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit) {
-
+	if (ATrainResource* Resource = Cast<ATrainResource>(OtherActor))
+	{
+		UTrainResourceData* Data = Resource->ResourceData.LoadSynchronous();
+		if (Data && Data->FuelValue > 0)
+		{
+			AddFuel(Data->FuelValue);
+			Resource->Destroy();
+		}
+	}
 }
 
 void UTrainEngineComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+	if (ATrainResource* Resource = Cast<ATrainResource>(OtherActor))
+	{
+		UTrainResourceData* Data = Resource->ResourceData.LoadSynchronous();
+		if (Data && Data->FuelValue > 0)
+		{
+			AddFuel(Data->FuelValue);
+			Resource->Destroy();
+		}
+	}
 }

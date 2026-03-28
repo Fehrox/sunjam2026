@@ -5,8 +5,10 @@
 #include "TrainCar.generated.h"
 
 class UTrainResourceData;
+class UTrainCarData;
 class UStaticMeshComponent;
 class ATrainResource;
+class ATrainTrack;
 
 UCLASS()
 class TRAINGAME_API ATrainCar : public AActor
@@ -20,11 +22,20 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> MeshComponent;
+	TObjectPtr<USceneComponent> RootSceneComponent;
 
 public:
+	/** Initialize the train car with its data and track */
+	UFUNCTION(BlueprintNativeEvent, Category = "Train Car")
+	void Initialise(UTrainCarData* NewCarData, ATrainTrack* StartingTrack, float InitialDistance);
+	virtual void Initialise_Implementation(UTrainCarData* NewCarData, ATrainTrack* StartingTrack, float InitialDistance);
+	
+	/** Update position along the track */
+	UFUNCTION(BlueprintCallable, Category = "Train Car")
+	void UpdatePosition(ATrainTrack* NewTrack, float NewDistance);
+
 	/** The types of resources this car can store */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Train Car")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Train Car")
 	TArray<TSoftObjectPtr<UTrainResourceData>> AcceptedResources;
 
 	/** The resources currently stored in this car */
@@ -42,4 +53,8 @@ public:
 	/** Checks if a resource can be stored in this car */
 	UFUNCTION(BlueprintPure, Category = "Train Car")
 	bool CanStoreResource(UTrainResourceData* ResourceData) const;
+
+protected:
+	UPROPERTY(BlueprintReadWrite, Category = "Train Car")
+	UTrainCarData* CarData;
 };

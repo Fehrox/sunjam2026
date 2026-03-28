@@ -1,6 +1,10 @@
 #include "Train.h"
 #include "TrainTrack.h"
 #include "TrainEngine.h"
+#include "TrainCar.h"
+#include "TrainCarData.h"
+#include "Engine/World.h"
+#include "Engine/EngineTypes.h"
 #include "Components/SplineComponent.h"
 
 ATrain::ATrain()
@@ -16,6 +20,11 @@ ATrain::ATrain()
 void ATrain::BeginPlay()
 {
 	Super::BeginPlay();
+	if (CurrentTrack)
+	{
+		TrackHistory.Add(CurrentTrack);
+	}
+	SpawnTrainCars();
 }
 
 void ATrain::Tick(float DeltaTime)
@@ -31,6 +40,8 @@ void ATrain::Tick(float DeltaTime)
 void ATrain::InitialiseTrain(ATrainTrack* StartingTrack) {
 	if (StartingTrack != nullptr) {
 		CurrentTrack = StartingTrack;
+		TrackHistory.Empty();
+		TrackHistory.Add(CurrentTrack);
 	}
 }
 
@@ -43,22 +54,26 @@ void ATrain::UpdatePositionAlongTrack(float DeltaTime)
 	{
 		DistanceAlongTrack += ActualSpeed * DeltaTime;
 
-		float SplineLength = CurrentTrack->SplineComponent->GetSplineLength();
-
-		if (DistanceAlongTrack >= SplineLength)
+		while (CurrentTrack && DistanceAlongTrack >= CurrentTrack->SplineComponent->GetSplineLength())
 		{
-			// Check for next track
+			float SplineLength = CurrentTrack->SplineComponent->GetSplineLength();
+			
 			if (CurrentTrack->NextTracks.Num() > 0)
 			{
-				// In a real switch scenario, the switch would define which track is 'next'
-				// For now, let's just pick the first one and reset distance.
 				DistanceAlongTrack -= SplineLength;
 				CurrentTrack = CurrentTrack->NextTracks[0];
+
+				// Add to history
+				TrackHistory.Add(CurrentTrack);
+				if (TrackHistory.Num() > MaxTrackHistory)
+				{
+					TrackHistory.RemoveAt(0);
+				}
 			}
 			else
 			{
-				// End of track, clamp distance.
 				DistanceAlongTrack = SplineLength;
+				break;
 			}
 		}
 
@@ -68,6 +83,58 @@ void ATrain::UpdatePositionAlongTrack(float DeltaTime)
 			FRotator NewRotation = CurrentTrack->SplineComponent->GetRotationAtDistanceAlongSpline(DistanceAlongTrack, ESplineCoordinateSpace::World);
 
 			SetActorLocationAndRotation(NewLocation, NewRotation);
+		}
+	}
+
+	// Update cars
+	for (int32 i = 0; i < CarInstances.Num(); ++i)
+	{
+		float CarTargetDistance = DistanceAlongTrack - (CarDistance * (i + 1));
+		int32 HistoryIndex = TrackHistory.Num() - 1;
+		ATrainTrack* CarTrack = CurrentTrack;
+
+		while (CarTargetDistance < 0.0f && HistoryIndex > 0)
+		{
+			// Go back in history instead of using PreviousTracks
+			HistoryIndex--;
+			CarTrack = TrackHistory[HistoryIndex];
+			
+			if (CarTrack && CarTrack->SplineComponent)
+			{
+				CarTargetDistance += CarTrack->SplineComponent->GetSplineLength();
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (CarTrack)
+		{
+			CarInstances[i]->UpdatePosition(CarTrack, FMath::Max(0.0f, CarTargetDistance));
+		}
+	}
+}
+
+void ATrain::SpawnTrainCars()
+{
+	if (!GetWorld()) return;
+
+	for (int32 i = 0; i < TrainCarsToSpawn.Num(); ++i)
+	{
+		if (UTrainCarData* CarData = TrainCarsToSpawn[i])
+		{
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+			ATrainCar* NewCar = GetWorld()->SpawnActor<ATrainCar>(TrainCarClass, GetActorTransform(), SpawnParams);
+			if (NewCar)
+			{
+				float InitialCarDistance = DistanceAlongTrack - (CarDistance * (i + 1));
+				NewCar->Initialise(CarData, CurrentTrack, InitialCarDistance);
+				CarInstances.Add(NewCar);
+			}
 		}
 	}
 }

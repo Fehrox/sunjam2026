@@ -37,6 +37,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Track")
 	TArray<ATrainTrack*> NextTracks;
 
+	// Array of previous tracks
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Track")
+	TArray<ATrainTrack*> PreviousTracks;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
