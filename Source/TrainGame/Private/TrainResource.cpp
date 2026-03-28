@@ -1,13 +1,20 @@
 #include "TrainResource.h"
 #include "TrainResourceData.h"
+#include "TrainCar.h"
+#include "TrainEngine.h"
+#include "TrainGameCharacter.h"
 #include "Components/StaticMeshComponent.h"
 
 ATrainResource::ATrainResource()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	RootComponent = MeshComponent;
+
+	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->SetNotifyRigidBodyCollision(true);
+	MeshComponent->OnComponentHit.AddDynamic(this, &ATrainResource::OnHit);
 }
 
 void ATrainResource::OnConstruction(const FTransform& Transform)
@@ -20,6 +27,18 @@ void ATrainResource::BeginPlay()
 {
 	Super::BeginPlay();
 	UpdateMeshFromData();
+}
+
+void ATrainResource::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (bIsPickedUp && OwnerCharacter)
+	{
+		FVector TargetLocation = OwnerCharacter->GetActorLocation() + FVector(0.0f, 0.0f, FloatHeight);
+		SetActorLocation(FMath::VInterpTo(GetActorLocation(), TargetLocation, DeltaSeconds, 10.0f));
+		SetActorRotation(FMath::RInterpTo(GetActorRotation(), FRotator::ZeroRotator, DeltaSeconds, 5.0f));
+	}
 }
 
 void ATrainResource::UpdateMeshFromData()
@@ -36,7 +55,10 @@ void ATrainResource::UpdateMeshFromData()
 
 void ATrainResource::Interact_Implementation(AActor* Interactor)
 {
-	OnResourcePickedUp(Interactor);
+	if (!bIsPickedUp)
+	{
+		OnResourcePickedUp(Interactor);
+	}
 }
 
 FText ATrainResource::GetInteractionName_Implementation() const
@@ -50,8 +72,53 @@ FText ATrainResource::GetInteractionName_Implementation() const
 
 void ATrainResource::OnResourcePickedUp(AActor* Interactor)
 {
-	// Logic for picking up the resource and attaching it to the player.
-	// For now, let's just destroy the actor and assume the player "has" it.
-	// In a real implementation, we'd probably call a function on the Interactor (e.g., ICarryInterface::PickUpItem)
-	Destroy();
+	if (ATrainGameCharacter* Character = Cast<ATrainGameCharacter>(Interactor))
+	{
+		if (Character->GetHeldResource() == nullptr)
+		{
+			bIsPickedUp = true;
+			OwnerCharacter = Character;
+			Character->SetHeldResource(this);
+
+			MeshComponent->SetSimulatePhysics(false);
+			MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+	}
+}
+
+void ATrainResource::Throw(FVector Direction)
+{
+	bIsPickedUp = false;
+	OwnerCharacter = nullptr;
+
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->AddImpulse(Direction * ThrowForce, NAME_None, true);
+}
+
+void ATrainResource::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (bIsPickedUp) return;
+
+	if (ATrainCar* TrainCar = Cast<ATrainCar>(OtherActor))
+	{
+		if (TrainCar->TryStoreResource(this))
+		{
+			return;
+		}
+	}
+
+	if (OtherComp)
+	{
+		if (UTrainEngineComponent* EngineComp = Cast<UTrainEngineComponent>(OtherComp))
+		{
+			UTrainResourceData* Data = ResourceData.LoadSynchronous();
+			if (Data && Data->FuelValue > 0)
+			{
+				EngineComp->AddFuel(Data->FuelValue);
+				Destroy();
+				return;
+			}
+		}
+	}
 }

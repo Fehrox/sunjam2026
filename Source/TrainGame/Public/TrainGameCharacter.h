@@ -52,9 +52,18 @@ public:
 	/** Returns the interaction component **/
 	UInteractionComponent* GetInteractionComponent() const { return InteractionComponent.Get(); }
 
+	/** Returns the currently held resource */
+	class ATrainResource* GetHeldResource() const { return HeldResource; }
+
+	/** Sets the currently held resource */
+	void SetHeldResource(class ATrainResource* Resource) { HeldResource = Resource; }
+
 	/** Called to interact with the environment */
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void Interact();
 
+private:
+	UPROPERTY()
+	class ATrainResource* HeldResource = nullptr;
 };
 

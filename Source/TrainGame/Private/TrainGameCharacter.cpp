@@ -11,6 +11,7 @@
 #include "Materials/Material.h"
 #include "Engine/World.h"
 #include "InteractionComponent.h"
+#include "TrainResource.h"
 
 ATrainGameCharacter::ATrainGameCharacter()
 {
@@ -63,6 +64,13 @@ void ATrainGameCharacter::Tick(float DeltaSeconds)
 
 void ATrainGameCharacter::Interact()
 {
+	if (HeldResource)
+	{
+		HeldResource->Throw(GetActorForwardVector());
+		HeldResource = nullptr;
+		return;
+	}
+
 	if (InteractionComponent)
 	{
 		InteractionComponent->Interact();
