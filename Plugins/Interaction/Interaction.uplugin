@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "InteractionSystem",
+	"Description": "Generic Interaction System Plugin",
+	"Category": "Gameplay",
+	"CreatedBy": "Zencoder",
+	"Modules": [
+		{
+			"Name": "Interaction",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
