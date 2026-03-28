@@ -36,7 +36,7 @@ void UTrainEngineComponent::Interact_Implementation(AActor* Interactor)
 	// Logic for adding fuel to the engine when interacted with.
 	// Typically, the player would need to have a fuel item and that would be consumed.
 	// For simplicity in this step, let's assume interacting adds a fixed amount if possible.
-	AddFuel(10.0f);
+	//AddFuel(10.0f);
 }
 
 FText UTrainEngineComponent::GetInteractionName_Implementation() const

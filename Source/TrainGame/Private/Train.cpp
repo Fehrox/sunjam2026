@@ -50,6 +50,11 @@ void ATrain::UpdatePositionAlongTrack(float DeltaTime)
 	float SpeedRatio = Engine->GetFuelRatio();
 	float ActualSpeed = BaseSpeed * SpeedRatio;
 
+	if (SpeedCurve)
+	{
+		ActualSpeed = SpeedCurve->GetFloatValue(SpeedRatio) * BaseSpeed;
+	}
+
 	if (ActualSpeed > 0.0f)
 	{
 		DistanceAlongTrack += ActualSpeed * DeltaTime;

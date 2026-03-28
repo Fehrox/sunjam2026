@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Curves/CurveFloat.h"
 #include "Train.generated.h"
 
 class ATrainTrack;
@@ -43,6 +44,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Train")
 	float BaseSpeed = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Train")
+	UCurveFloat* SpeedCurve;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Train")
 	float DistanceAlongTrack = 0.0f;
