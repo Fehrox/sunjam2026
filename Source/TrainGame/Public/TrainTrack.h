@@ -29,6 +29,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visuals")
 	TEnumAsByte<ESplineMeshAxis::Type> ForwardAxis = ESplineMeshAxis::X;
 
+	/** Distance each segment covers along the track */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visuals")
+	float TrackMeshDistance = 1000.0f;
+
 	// Array of possible next tracks (for switches)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Track")
 	TArray<ATrainTrack*> NextTracks;

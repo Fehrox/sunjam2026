@@ -25,7 +25,7 @@ void ATrainTrack::OnConstruction(const FTransform& Transform)
 
 void ATrainTrack::UpdateSplineMeshes()
 {
-	if (!TrackMesh || !SplineComponent)
+	if (!TrackMesh || !SplineComponent || TrackMeshDistance <= 0.0f)
 	{
 		return;
 	}
@@ -43,9 +43,10 @@ void ATrainTrack::UpdateSplineMeshes()
 		}
 	}
 
-	int32 NumPoints = SplineComponent->GetNumberOfSplinePoints();
+	float TotalLength = SplineComponent->GetSplineLength();
+	int32 NumMeshes = FMath::CeilToInt(TotalLength / TrackMeshDistance);
 
-	for (int32 i = 0; i < NumPoints - 1; ++i)
+	for (int32 i = 0; i < NumMeshes; ++i)
 	{
 		USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(this);
 		SplineMesh->SetMobility(EComponentMobility::Movable); // or Static if the track is static
@@ -60,9 +61,18 @@ void ATrainTrack::UpdateSplineMeshes()
 		SplineMesh->RegisterComponent();
 		SplineMesh->AttachToComponent(SplineComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
-		FVector StartPos, StartTangent, EndPos, EndTangent;
-		SplineComponent->GetLocationAndTangentAtSplinePoint(i, StartPos, StartTangent, ESplineCoordinateSpace::Local);
-		SplineComponent->GetLocationAndTangentAtSplinePoint(i + 1, EndPos, EndTangent, ESplineCoordinateSpace::Local);
+		float StartDist = i * TrackMeshDistance;
+		float EndDist = FMath::Min((i + 1) * TrackMeshDistance, TotalLength);
+
+		FVector StartPos = SplineComponent->GetLocationAtDistanceAlongSpline(StartDist, ESplineCoordinateSpace::Local);
+		FVector StartTangent = SplineComponent->GetTangentAtDistanceAlongSpline(StartDist, ESplineCoordinateSpace::Local);
+		
+		FVector EndPos = SplineComponent->GetLocationAtDistanceAlongSpline(EndDist, ESplineCoordinateSpace::Local);
+		FVector EndTangent = SplineComponent->GetTangentAtDistanceAlongSpline(EndDist, ESplineCoordinateSpace::Local);
+
+		// Clamp the tangent for consistent spline curve.
+		StartTangent = StartTangent.GetClampedToMaxSize(TrackMeshDistance);
+		EndTangent = EndTangent.GetClampedToMaxSize(TrackMeshDistance);
 
 		SplineMesh->SetStartAndEnd(StartPos, StartTangent, EndPos, EndTangent);
 		
