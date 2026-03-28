@@ -6,6 +6,8 @@
 
 class IInteractable;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInteractionDelegate, AActor*, Actor);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class INTERACTION_API UInteractionComponent : public UActorComponent
 {
@@ -41,6 +43,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	bool bShowDebug = true;
 
+protected:
+	UPROPERTY(BlueprintAssignable)
+	FInteractionDelegate OnInteraction;
+
+	UPROPERTY(BlueprintAssignable)
+	FInteractionDelegate OnInteractionFocusChange;
 private:
 	void UpdateInteractionTarget();
 

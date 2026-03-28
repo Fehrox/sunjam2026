@@ -167,6 +167,8 @@ void UInteractionComponent::UpdateInteractionTarget()
 
 		CurrentTarget = NewTarget;
 
+		OnInteractionFocusChange.Broadcast(CurrentTarget);
+		
 		if (CurrentTarget)
 		{
 			if (CurrentTarget->Implements<UInteractable>())
