@@ -7,10 +7,8 @@
 #include "GameFramework/PlayerController.h"
 #include "TrainGamePlayerController.generated.h"
 
-class UNiagaraSystem;
 class UInputMappingContext;
 class UInputAction;
-class UPathFollowingComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -25,45 +23,17 @@ class ATrainGamePlayerController : public APlayerController
 
 protected:
 
-	/** Component used for moving along a NavMesh path. */
-	UPROPERTY(VisibleDefaultsOnly, Category = AI)
-	TObjectPtr<UPathFollowingComponent> PathFollowingComponent;
-
-	/** Time Threshold to know if it was a short press */
-	UPROPERTY(EditAnywhere, Category="Input")
-	float ShortPressThreshold;
-
-	/** FX Class that we will spawn when clicking */
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UNiagaraSystem> FXCursor;
-
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
-	
-	/** Set Destination Click Action */
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> SetDestinationClickAction;
 
-	/** Set Destination Touch Action */
+	/** Move Action */
 	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> SetDestinationTouchAction;
+	TObjectPtr<UInputAction> MoveAction;
 
 	/** Interact Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> InteractAction;
-
-	/** True if the controlled character should navigate to the mouse cursor. */
-	uint32 bMoveToMouseCursor : 1;
-
-	/** Set to true if we're using touch input */
-	uint32 bIsTouch : 1;
-
-	/** Saved location of the character movement destination */
-	FVector CachedDestination;
-
-	/** Time that the click input has been pressed */
-	float FollowTime = 0.0f;
 
 public:
 
@@ -72,19 +42,15 @@ public:
 
 protected:
 
+	/** Initialization */
+	virtual void BeginPlay() override;
+
 	/** Initialize input bindings */
 	virtual void SetupInputComponent() override;
 	
-	/** Input handlers */
-	void OnInputStarted();
-	void OnSetDestinationTriggered();
-	void OnSetDestinationReleased();
-	void OnTouchTriggered();
-	void OnTouchReleased();
+	void OnMove(const struct FInputActionValue& Value);
 	void OnInteractTriggered();
-
-	/** Helper function to get the move destination */
-	void UpdateCachedDestination();
+	
 };
 
 
