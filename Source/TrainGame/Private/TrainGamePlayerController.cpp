@@ -25,7 +25,6 @@ void ATrainGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	// Add input mapping context
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{

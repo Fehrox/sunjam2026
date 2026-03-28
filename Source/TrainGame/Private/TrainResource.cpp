@@ -15,6 +15,7 @@ ATrainResource::ATrainResource()
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetNotifyRigidBodyCollision(true);
 	MeshComponent->OnComponentHit.AddDynamic(this, &ATrainResource::OnHit);
+	MeshComponent->OnComponentBeginOverlap.AddDynamic(this, &ATrainResource::OnOverlapBegin);
 }
 
 void ATrainResource::OnConstruction(const FTransform& Transform)
@@ -97,6 +98,33 @@ void ATrainResource::Throw(FVector Direction)
 }
 
 void ATrainResource::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (bIsPickedUp) return;
+
+	if (ATrainCar* TrainCar = Cast<ATrainCar>(OtherActor))
+	{
+		if (TrainCar->TryStoreResource(this))
+		{
+			return;
+		}
+	}
+
+	if (OtherComp)
+	{
+		if (UTrainEngineComponent* EngineComp = Cast<UTrainEngineComponent>(OtherComp))
+		{
+			UTrainResourceData* Data = ResourceData.LoadSynchronous();
+			if (Data && Data->FuelValue > 0)
+			{
+				EngineComp->AddFuel(Data->FuelValue);
+				Destroy();
+				return;
+			}
+		}
+	}
+}
+
+void ATrainResource::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (bIsPickedUp) return;
 

@@ -3,7 +3,13 @@
 UTrainEngineComponent::UTrainEngineComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	CurrentFuel = 50.0f;
+
+	//SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	//SetGenerateOverlapEvents(true);
+	//SetBoxExtent(FVector(100.0f, 100.0f, 100.0f));
+
+	OnComponentHit.AddDynamic(this, &UTrainEngineComponent::OnHit);
+	OnComponentBeginOverlap.AddDynamic(this, &UTrainEngineComponent::OnOverlapBegin);
 }
 
 void UTrainEngineComponent::BeginPlay()
@@ -41,4 +47,13 @@ void UTrainEngineComponent::AddFuel(float Amount)
 	CurrentFuel = FMath::Clamp(CurrentFuel + Amount, 0.0f, MaxFuel);
 
 	OnFuelAdded.Broadcast(CurrentFuel, MaxFuel);
+}
+
+void UTrainEngineComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit) {
+
+}
+
+void UTrainEngineComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 }
