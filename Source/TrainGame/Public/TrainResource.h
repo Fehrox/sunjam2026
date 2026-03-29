@@ -8,6 +8,10 @@
 class UTrainResourceData;
 class UStaticMeshComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTGResourceUsedForFuelDelegate, float, NewFuel, float, MaxFuel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTGResourceStoredDelegate, int, NewResourceAmount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTGResourceVoidDelegate);
+
 UCLASS()
 class TRAINGAME_API ATrainResource : public AActor, public IInteractable
 {
@@ -52,8 +56,15 @@ public:
 	virtual int32 GetInteractionPriority_Implementation() const override { return 10; }
 	// End IInteractable interface
 
+protected:
+	UPROPERTY(BlueprintAssignable, Category = "Resource")
+	FTGResourceUsedForFuelDelegate OnResourceUsedForFuel;
+	UPROPERTY(BlueprintAssignable, Category = "Resource")
+	FTGResourceStoredDelegate OnResourceStored;
+	UPROPERTY(BlueprintAssignable, Category = "Resource")
+	FTGResourceVoidDelegate OnResourcePickedUp;
 private:
-	void OnResourcePickedUp(AActor* Interactor);
+	void HandleResourcePickedUp(AActor* Interactor);
 	void UpdateMeshFromData();
 
 	bool bIsPickedUp = false;

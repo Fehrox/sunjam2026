@@ -1,6 +1,8 @@
 #include "TrainEngine.h"
 #include "TrainResource.h"
 #include "TrainResourceData.h"
+#include "Bridge.h"
+#include "Train.h"
 
 UTrainEngineComponent::UTrainEngineComponent()
 {
@@ -62,6 +64,17 @@ void UTrainEngineComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 			Resource->Destroy();
 		}
 	}
+	else if (ABridge* Bridge = Cast<ABridge>(OtherActor))
+	{
+		if (!Bridge->IsFullyRepaired())
+		{
+			if (ATrain* Train = Cast<ATrain>(GetOwner()))
+			{
+				Train->Derail();
+				OnDerailed.Broadcast();
+			}
+		}
+	}
 }
 
 void UTrainEngineComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -73,6 +86,17 @@ void UTrainEngineComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 		{
 			AddFuel(Data->FuelValue);
 			Resource->Destroy();
+		}
+	}
+	else if (ABridge* Bridge = Cast<ABridge>(OtherActor))
+	{
+		if (!Bridge->IsFullyRepaired())
+		{
+			if (ATrain* Train = Cast<ATrain>(GetOwner()))
+			{
+				Train->Derail();
+				OnDerailed.Broadcast();
+			}
 		}
 	}
 }

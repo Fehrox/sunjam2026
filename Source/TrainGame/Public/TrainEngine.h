@@ -6,6 +6,7 @@
 #include "TrainEngine.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTGFuelChangeDelegate, float, CurrentFuel, float, MaxFuel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTGTrainDerailedDelegate);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TRAINGAME_API UTrainEngineComponent : public UBoxComponent, public IInteractable
@@ -21,6 +22,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Engine")
 	FTGFuelChangeDelegate OnFuelAdded;
+
+	UPROPERTY(BlueprintAssignable, Category = "Engine")
+	FTGTrainDerailedDelegate OnDerailed;
 
 protected:
 	virtual void BeginPlay() override;

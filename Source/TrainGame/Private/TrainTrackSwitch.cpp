@@ -15,8 +15,12 @@ void ATrainTrackSwitch::BeginPlay()
 
 void ATrainTrackSwitch::Interact_Implementation(AActor* Interactor)
 {
-	CurrentTargetIndex = (CurrentTargetIndex + 1) % TargetTracks.Num();
-	ToggleSwitch();
+	if (TargetTracks.Num() > 0)
+	{
+		CurrentTargetIndex = (CurrentTargetIndex + 1) % TargetTracks.Num();
+		ToggleSwitch();
+		OnSwitchToggled.Broadcast(CurrentTargetIndex);
+	}
 }
 
 FText ATrainTrackSwitch::GetInteractionName_Implementation() const
@@ -26,7 +30,7 @@ FText ATrainTrackSwitch::GetInteractionName_Implementation() const
 
 void ATrainTrackSwitch::ToggleSwitch()
 {
-	if (SourceTrack && TargetTracks.Num() > 0)
+	if (SourceTrack && CurrentTargetIndex < TargetTracks.Num())
 	{
 		SourceTrack->NextTracks.Empty();
 		SourceTrack->NextTracks.Add(TargetTracks[CurrentTargetIndex]);

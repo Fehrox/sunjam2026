@@ -24,10 +24,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "HUD")
 	TSubclassOf<UTrainHUDWidget> HUDWidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, Category = "HUD")
 	TObjectPtr<UTrainHUDWidget> HUDWidget;
 
-public:
+protected:
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void InitialiseHUD(ATrain* TrainActor);
 };

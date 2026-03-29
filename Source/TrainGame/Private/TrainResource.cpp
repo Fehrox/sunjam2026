@@ -58,7 +58,7 @@ void ATrainResource::Interact_Implementation(AActor* Interactor)
 {
 	if (!bIsPickedUp)
 	{
-		OnResourcePickedUp(Interactor);
+		HandleResourcePickedUp(Interactor);
 	}
 }
 
@@ -71,7 +71,7 @@ FText ATrainResource::GetInteractionName_Implementation() const
 	return NSLOCTEXT("TrainGame", "InteractResourceDefault", "Pick up resource");
 }
 
-void ATrainResource::OnResourcePickedUp(AActor* Interactor)
+void ATrainResource::HandleResourcePickedUp(AActor* Interactor)
 {
 	if (ATrainGameCharacter* Character = Cast<ATrainGameCharacter>(Interactor))
 	{
@@ -80,6 +80,8 @@ void ATrainResource::OnResourcePickedUp(AActor* Interactor)
 			bIsPickedUp = true;
 			OwnerCharacter = Character;
 			Character->SetHeldResource(this);
+
+			OnResourcePickedUp.Broadcast();
 
 			MeshComponent->SetSimulatePhysics(false);
 			MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -105,6 +107,7 @@ void ATrainResource::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 	{
 		if (TrainCar->TryStoreResource(this))
 		{
+			OnResourceStored.Broadcast(TrainCar->StoredResources.Num());
 			return;
 		}
 	}
@@ -117,6 +120,7 @@ void ATrainResource::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 			if (Data && Data->FuelValue > 0)
 			{
 				EngineComp->AddFuel(Data->FuelValue);
+				OnResourceUsedForFuel.Broadcast(EngineComp->CurrentFuel, EngineComp->MaxFuel);
 				Destroy();
 				return;
 			}

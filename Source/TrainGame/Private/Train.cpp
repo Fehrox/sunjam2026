@@ -47,6 +47,8 @@ void ATrain::InitialiseTrain(ATrainTrack* StartingTrack) {
 
 void ATrain::UpdatePositionAlongTrack(float DeltaTime)
 {
+	if (bIsDerailed) return;
+
 	float SpeedRatio = Engine->GetFuelRatio();
 	float ActualSpeed = BaseSpeed * SpeedRatio;
 
@@ -119,6 +121,14 @@ void ATrain::UpdatePositionAlongTrack(float DeltaTime)
 			CarInstances[i]->UpdatePosition(CarTrack, FMath::Max(0.0f, CarTargetDistance));
 		}
 	}
+}
+
+void ATrain::Derail()
+{
+	if (bIsDerailed) return;
+
+	bIsDerailed = true;
+	OnDerailed.Broadcast();
 }
 
 void ATrain::SpawnTrainCars()

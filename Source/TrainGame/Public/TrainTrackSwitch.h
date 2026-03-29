@@ -7,6 +7,8 @@
 
 class ATrainTrack;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwitchToggled, int32, CurrentIndex);
+
 UCLASS()
 class TRAINGAME_API ATrainTrackSwitch : public AActor, public IInteractable
 {
@@ -14,6 +16,9 @@ class TRAINGAME_API ATrainTrackSwitch : public AActor, public IInteractable
 
 public:
 	ATrainTrackSwitch();
+
+	UPROPERTY(BlueprintAssignable, Category = "Track Switch")
+	FOnSwitchToggled OnSwitchToggled;
 
 protected:
 	virtual void BeginPlay() override;

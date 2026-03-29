@@ -10,6 +10,8 @@ class UTrainEngineComponent;
 class UTrainCarData;
 class ATrainCar;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTrainDerailed);
+
 UCLASS()
 class TRAINGAME_API ATrain : public AActor
 {
@@ -20,6 +22,19 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Train")
+	FOnTrainDerailed OnDerailed;
+
+	UFUNCTION(BlueprintCallable, Category = "Train")
+	void Derail();
+
+	UFUNCTION(BlueprintPure, Category = "Train")
+	bool IsDerailed() const { return bIsDerailed; }
+
+private:
+	bool bIsDerailed = false;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -54,11 +69,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Train")
 	void InitialiseTrain(ATrainTrack* StartingTrack);
 
-private:
+protected:
 	void UpdatePositionAlongTrack(float DeltaTime);
 	void SpawnTrainCars();
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, Category = "Train|Train Cars")
 	TArray<ATrainCar*> CarInstances;
 
 	UPROPERTY()
