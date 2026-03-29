@@ -1,5 +1,5 @@
-#include "TrainTrackSwitch.h"
-#include "TrainTrack.h"
+#include "World/TrainTrackSwitch.h"
+#include "World/TrainTrack.h"
 
 ATrainTrackSwitch::ATrainTrackSwitch()
 {

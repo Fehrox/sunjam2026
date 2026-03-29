@@ -29,6 +29,10 @@ public class TrainGame : ModuleRules
 		PublicIncludePaths.AddRange(new string[] {
 			"TrainGame",
 			"TrainGame/Public",
+			"TrainGame/Public/GameFramework",
+			"TrainGame/Public/Train",
+			"TrainGame/Public/Train/Components",
+			"TrainGame/Public/World",
 			"TrainGame/Public/Variant_Strategy",
 			"TrainGame/Public/Variant_Strategy/UI",
 			"TrainGame/Public/Variant_TwinStick",

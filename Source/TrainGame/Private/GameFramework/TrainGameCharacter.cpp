@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "TrainGameCharacter.h"
+#include "GameFramework/TrainGameCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
@@ -11,7 +11,7 @@
 #include "Materials/Material.h"
 #include "Engine/World.h"
 #include "InteractionComponent.h"
-#include "TrainResource.h"
+#include "Train/TrainResource.h"
 
 ATrainGameCharacter::ATrainGameCharacter()
 {

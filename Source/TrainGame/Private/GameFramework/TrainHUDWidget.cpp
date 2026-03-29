@@ -1,6 +1,6 @@
-#include "TrainHUDWidget.h"
-#include "Train.h"
-#include "TrainEngine.h"
+#include "GameFramework/TrainHUDWidget.h"
+#include "Train/Train.h"
+#include "Train/TrainEngine.h"
 
 void UTrainHUDWidget::InitialiseHUD(ATrain* TrainActor)
 {

@@ -1,6 +1,6 @@
-#include "TrainEngine.h"
-#include "TrainResource.h"
-#include "TrainResourceData.h"
+#include "Train/TrainEngine.h"
+#include "Train/TrainResource.h"
+#include "Train/TrainResourceData.h"
 
 UTrainEngineComponent::UTrainEngineComponent()
 {

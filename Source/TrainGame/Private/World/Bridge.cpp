@@ -1,7 +1,7 @@
-#include "Bridge.h"
+#include "World/Bridge.h"
 #include "Components/BoxComponent.h"
-#include "TrainResource.h"
-#include "TrainResourceData.h"
+#include "Train/TrainResource.h"
+#include "Train/TrainResourceData.h"
 
 ABridge::ABridge()
 {

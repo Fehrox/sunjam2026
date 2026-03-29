@@ -1,4 +1,4 @@
-#include "WingFlapComponent.h"
+#include "Train/Components/WingFlapComponent.h"
 
 #include "Components/SceneComponent.h"
 #include "GameFramework/Actor.h"

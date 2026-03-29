@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "TrainGameGameMode.h"
-#include "TrainGameCharacter.h"
-#include "TrainGamePlayerController.h"
-#include "TrainHUD.h"
+#include "GameFramework/TrainGameGameMode.h"
+#include "GameFramework/TrainGameCharacter.h"
+#include "GameFramework/TrainGamePlayerController.h"
+#include "GameFramework/TrainHUD.h"
 
 ATrainGameGameMode::ATrainGameGameMode()
 {
@@ -15,4 +15,14 @@ ATrainGameGameMode::ATrainGameGameMode()
 
 	// set default HUD class
 	HUDClass = ATrainHUD::StaticClass();
+}
+
+void ATrainGameGameMode::TriggerWin()
+{
+	OnWin.Broadcast();
+}
+
+void ATrainGameGameMode::TriggerLoss()
+{
+	OnLoss.Broadcast();
 }

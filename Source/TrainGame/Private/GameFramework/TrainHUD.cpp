@@ -1,8 +1,8 @@
-#include "TrainHUD.h"
-#include "TrainHUDWidget.h"
+#include "GameFramework/TrainHUD.h"
+#include "GameFramework/TrainHUDWidget.h"
 #include "Blueprint/UserWidget.h"
-#include "Train.h"
-#include "TrainEngine.h"
+#include "Train/Train.h"
+#include "Train/TrainEngine.h"
 
 ATrainHUD::ATrainHUD()
 {

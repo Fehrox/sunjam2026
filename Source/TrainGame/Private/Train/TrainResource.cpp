@@ -1,8 +1,8 @@
-#include "TrainResource.h"
-#include "TrainResourceData.h"
-#include "TrainCar.h"
-#include "TrainEngine.h"
-#include "TrainGameCharacter.h"
+#include "Train/TrainResource.h"
+#include "Train/TrainResourceData.h"
+#include "Train/TrainCar.h"
+#include "Train/TrainEngine.h"
+#include "GameFramework/TrainGameCharacter.h"
 #include "Components/StaticMeshComponent.h"
 
 ATrainResource::ATrainResource()

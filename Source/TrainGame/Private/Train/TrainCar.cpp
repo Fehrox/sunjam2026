@@ -1,8 +1,8 @@
-#include "TrainCar.h"
-#include "TrainResource.h"
-#include "TrainResourceData.h"
-#include "TrainCarData.h"
-#include "TrainTrack.h"
+#include "Train/TrainCar.h"
+#include "Train/TrainResource.h"
+#include "Train/TrainResourceData.h"
+#include "Train/TrainCarData.h"
+#include "World/TrainTrack.h"
 #include "Components/SplineComponent.h"
 
 ATrainCar::ATrainCar()
