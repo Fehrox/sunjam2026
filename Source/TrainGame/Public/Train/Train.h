@@ -104,7 +104,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Train|Brakes")
 	float BrakeDuration = 2.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Train")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Train")
 	float DistanceAlongTrack = 0.0f;
 
 	UFUNCTION(BlueprintCallable, Category = "Train")

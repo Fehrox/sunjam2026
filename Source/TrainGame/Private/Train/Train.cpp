@@ -179,7 +179,7 @@ void ATrain::UpdatePositionAlongTrack(float DeltaTime)
 
 		if (CarTrack)
 		{
-			CarInstances[i]->UpdatePosition(CarTrack, FMath::Max(0.0f, CarTargetDistance));
+			CarInstances[i]->UpdatePosition(CarTrack, CarTargetDistance);
 		}
 	}
 }

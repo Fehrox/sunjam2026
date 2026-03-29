@@ -34,8 +34,22 @@ void ATrainCar::UpdatePosition(ATrainTrack* NewTrack, float NewDistance)
 {
 	if (!NewTrack || !NewTrack->SplineComponent) return;
 
-	FVector NewLocation = NewTrack->SplineComponent->GetLocationAtDistanceAlongSpline(NewDistance, ESplineCoordinateSpace::World);
-	FRotator NewRotation = NewTrack->SplineComponent->GetRotationAtDistanceAlongSpline(NewDistance, ESplineCoordinateSpace::World);
+	FVector NewLocation;
+	FRotator NewRotation;
+
+	if (NewDistance < 0.0f)
+	{
+		FVector StartLocation = NewTrack->SplineComponent->GetLocationAtDistanceAlongSpline(0.0f, ESplineCoordinateSpace::World);
+		FVector StartDirection = NewTrack->SplineComponent->GetDirectionAtDistanceAlongSpline(0.0f, ESplineCoordinateSpace::World);
+
+		NewLocation = StartLocation + (StartDirection * NewDistance);
+		NewRotation = StartDirection.Rotation();
+	}
+	else
+	{
+		NewLocation = NewTrack->SplineComponent->GetLocationAtDistanceAlongSpline(NewDistance, ESplineCoordinateSpace::World);
+		NewRotation = NewTrack->SplineComponent->GetRotationAtDistanceAlongSpline(NewDistance, ESplineCoordinateSpace::World);
+	}
 
 	SetActorLocationAndRotation(NewLocation, NewRotation);
 }
