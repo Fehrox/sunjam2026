@@ -4,6 +4,7 @@
 #include "Train/TrainCarData.h"
 #include "World/TrainTrack.h"
 #include "Components/SplineComponent.h"
+#include "GameFramework/TrainGameCharacter.h"
 
 ATrainCar::ATrainCar()
 {
@@ -79,4 +80,46 @@ bool ATrainCar::CanStoreResource(UTrainResourceData* ResourceData) const
 	}
 
 	return false;
+}
+
+void ATrainCar::Interact_Implementation(AActor* Interactor)
+{
+	if (StoredResources.Num() == 0)
+	{
+		return;
+	}
+
+	ATrainGameCharacter* Character = Cast<ATrainGameCharacter>(Interactor);
+	if (!Character || Character->GetHeldResource() != nullptr)
+	{
+		return;
+	}
+
+	// Take the last resource
+	TSoftObjectPtr<UTrainResourceData> ResourceData = StoredResources.Pop();
+
+	// Spawn the resource
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = Character;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	FVector SpawnLocation = Character->GetActorLocation();
+	ATrainResource* NewResource = GetWorld()->SpawnActor<ATrainResource>(ATrainResource::StaticClass(), SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+	
+	if (NewResource)
+	{
+		NewResource->ResourceData = ResourceData;
+		NewResource->UpdateMeshFromData();
+		// Trigger pickup immediately
+		IInteractable::Execute_Interact(NewResource, Character);
+	}
+}
+
+FText ATrainCar::GetInteractionName_Implementation() const
+{
+	if (StoredResources.Num() > 0)
+	{
+		return NSLOCTEXT("TrainGame", "InteractTrainCarTake", "Take Resource");
+	}
+	return NSLOCTEXT("TrainGame", "InteractTrainCarEmpty", "Train Car Empty");
 }

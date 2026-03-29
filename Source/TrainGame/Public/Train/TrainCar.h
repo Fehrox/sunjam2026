@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "InteractionInterface.h"
 #include "TrainCar.generated.h"
 
 class UTrainResourceData;
@@ -11,7 +12,7 @@ class ATrainResource;
 class ATrainTrack;
 
 UCLASS()
-class TRAINGAME_API ATrainCar : public AActor
+class TRAINGAME_API ATrainCar : public AActor, public IInteractable
 {
 	GENERATED_BODY()
 
@@ -53,6 +54,12 @@ public:
 	/** Checks if a resource can be stored in this car */
 	UFUNCTION(BlueprintPure, Category = "Train Car")
 	bool CanStoreResource(UTrainResourceData* ResourceData) const;
+
+	// IInteractable interface
+	virtual void Interact_Implementation(AActor* Interactor) override;
+	virtual FText GetInteractionName_Implementation() const override;
+	virtual int32 GetInteractionPriority_Implementation() const override { return 5; }
+	// End IInteractable interface
 
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Train Car")

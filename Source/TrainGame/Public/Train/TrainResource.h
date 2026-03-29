@@ -56,6 +56,10 @@ public:
 	virtual int32 GetInteractionPriority_Implementation() const override { return 10; }
 	// End IInteractable interface
 
+	/** Updates the mesh based on the resource data */
+	UFUNCTION(BlueprintCallable, Category = "Resource")
+	void UpdateMeshFromData();
+
 protected:
 	UPROPERTY(BlueprintAssignable, Category = "Resource")
 	FTGResourceUsedForFuelDelegate OnResourceUsedForFuel;
@@ -65,7 +69,6 @@ protected:
 	FTGResourceVoidDelegate OnResourcePickedUp;
 private:
 	void HandleResourcePickedUp(AActor* Interactor);
-	void UpdateMeshFromData();
 
 	bool bIsPickedUp = false;
 
