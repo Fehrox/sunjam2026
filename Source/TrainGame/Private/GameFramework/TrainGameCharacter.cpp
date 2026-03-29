@@ -28,6 +28,7 @@ ATrainGameCharacter::ATrainGameCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+	GetCharacterMovement()->bIgnoreBaseRotation = true;
 
 	// Create the camera boom component
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -55,6 +56,12 @@ ATrainGameCharacter::ATrainGameCharacter()
 void ATrainGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
+	{
+		// Keep input directions stable when standing on rotating movement bases like the train.
+		MovementComponent->bIgnoreBaseRotation = true;
+	}
 }
 
 void ATrainGameCharacter::Tick(float DeltaSeconds)
