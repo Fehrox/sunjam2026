@@ -9,6 +9,7 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UInteractionComponent;
+class UDamageType;
 
 /**
  *  A controllable top-down perspective character
@@ -43,6 +44,8 @@ public:
 	/** Update */
 	virtual void Tick(float DeltaSeconds) override;
 
+	virtual void FellOutOfWorld(const UDamageType& DmgType) override;
+
 	/** Returns the camera component **/
 	UCameraComponent* GetTopDownCameraComponent() const { return TopDownCameraComponent.Get(); }
 
@@ -67,8 +70,15 @@ public:
 	void SetIndoors(bool bInIndoors);
 
 private:
+	bool TriggerFallLoss();
+
 	UPROPERTY()
 	class ATrainResource* HeldResource = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Game", meta = (AllowPrivateAccess = "true"))
+	float FallLossZThreshold = -3.f;
+
+	bool bHasTriggeredFallLoss = false;
 
 	/** Default camera boom target arm length */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))

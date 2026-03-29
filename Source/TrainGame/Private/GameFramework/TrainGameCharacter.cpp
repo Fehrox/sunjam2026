@@ -8,6 +8,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/TrainGameGameMode.h"
+#include "GameFramework/DamageType.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
 #include "InteractionComponent.h"
@@ -73,6 +75,11 @@ void ATrainGameCharacter::Tick(float DeltaSeconds)
 		const float TargetZoom = bIsIndoors ? IndoorZoomDistance : DefaultZoomDistance;
 		CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, TargetZoom, DeltaSeconds, ZoomInterpSpeed);
 	}
+
+	if (!bHasTriggeredFallLoss && GetActorLocation().Z <= FallLossZThreshold)
+	{
+		TriggerFallLoss();
+	}
 }
 
 void ATrainGameCharacter::SetIndoors(bool bInIndoors)
@@ -93,4 +100,29 @@ void ATrainGameCharacter::Interact()
 	{
 		InteractionComponent->Interact();
 	}
+}
+
+void ATrainGameCharacter::FellOutOfWorld(const UDamageType& DmgType)
+{
+	if (!TriggerFallLoss())
+	{
+		Super::FellOutOfWorld(DmgType);
+	}
+}
+
+bool ATrainGameCharacter::TriggerFallLoss()
+{
+	if (bHasTriggeredFallLoss)
+	{
+		return true;
+	}
+
+	if (ATrainGameGameMode* GameMode = GetWorld()->GetAuthGameMode<ATrainGameGameMode>())
+	{
+		bHasTriggeredFallLoss = true;
+		GameMode->TriggerLoss();
+		return true;
+	}
+
+	return false;
 }
