@@ -3,9 +3,35 @@
 #include "TrainEngine.h"
 #include "TrainCar.h"
 #include "TrainCarData.h"
+#include "Bridge.h"
 #include "Engine/World.h"
 #include "Engine/EngineTypes.h"
 #include "Components/SplineComponent.h"
+
+UTrainBrakeSwitch::UTrainBrakeSwitch()
+{
+	//SetBoxExtent(FVector(50.0f, 50.0f, 50.0f));
+	//SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+	//SetGenerateOverlapEvents(true);
+}
+
+void UTrainBrakeSwitch::Interact_Implementation(AActor* Interactor)
+{
+	if (ATrain* Train = Cast<ATrain>(GetOwner()))
+	{
+		Train->ToggleBrakes();
+		OnBrakeSwitchToggled.Broadcast(Train->AreBrakesEnabled());
+	}
+}
+
+FText UTrainBrakeSwitch::GetInteractionName_Implementation() const
+{
+	if (const ATrain* Train = Cast<ATrain>(GetOwner()))
+	{
+		return Train->AreBrakesEnabled() ? FText::FromString("Release Brakes") : FText::FromString("Apply Brakes");
+	}
+	return FText::FromString("Brake Switch");
+}
 
 ATrain::ATrain()
 {
@@ -15,11 +41,21 @@ ATrain::ATrain()
 
 	Engine = CreateDefaultSubobject<UTrainEngineComponent>(TEXT("Engine"));
 	Engine->SetupAttachment(RootComponent);
+
+	BrakeSwitch = CreateDefaultSubobject<UTrainBrakeSwitch>(TEXT("BrakeSwitch"));
+	BrakeSwitch->SetupAttachment(RootComponent);
 }
 
 void ATrain::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (Engine)
+	{
+		Engine->OnComponentHit.AddDynamic(this, &ATrain::OnEngineHit);
+		Engine->OnComponentBeginOverlap.AddDynamic(this, &ATrain::OnEngineOverlap);
+	}
+
 	if (CurrentTrack)
 	{
 		TrackHistory.Add(CurrentTrack);
@@ -45,6 +81,11 @@ void ATrain::InitialiseTrain(ATrainTrack* StartingTrack) {
 	}
 }
 
+void ATrain::ToggleBrakes()
+{
+	bBrakesEnabled = !bBrakesEnabled;
+}
+
 void ATrain::UpdatePositionAlongTrack(float DeltaTime)
 {
 	if (bIsDerailed) return;
@@ -55,6 +96,26 @@ void ATrain::UpdatePositionAlongTrack(float DeltaTime)
 	if (SpeedCurve)
 	{
 		ActualSpeed = SpeedCurve->GetFloatValue(SpeedRatio) * BaseSpeed;
+	}
+
+	// Apply brakes
+	if (bBrakesEnabled)
+	{
+		BrakeProgress = FMath::Clamp(BrakeProgress + (DeltaTime / BrakeDuration), 0.0f, 1.0f);
+	}
+	else
+	{
+		BrakeProgress = FMath::Clamp(BrakeProgress - (DeltaTime / BrakeDuration), 0.0f, 1.0f);
+	}
+
+	if (BrakeCurve)
+	{
+		ActualSpeed *= BrakeCurve->GetFloatValue(BrakeProgress);
+	}
+	else
+	{
+		// Simple linear fallback if no curve
+		ActualSpeed *= (1.0f - BrakeProgress);
 	}
 
 	if (ActualSpeed > 0.0f)
@@ -129,6 +190,28 @@ void ATrain::Derail()
 
 	bIsDerailed = true;
 	OnDerailed.Broadcast();
+}
+
+void ATrain::OnEngineHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (ABridge* Bridge = Cast<ABridge>(OtherActor))
+	{
+		if (!Bridge->IsFullyRepaired())
+		{
+			Derail();
+		}
+	}
+}
+
+void ATrain::OnEngineOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (ABridge* Bridge = Cast<ABridge>(OtherActor))
+	{
+		if (!Bridge->IsFullyRepaired())
+		{
+			Derail();
+		}
+	}
 }
 
 void ATrain::SpawnTrainCars()

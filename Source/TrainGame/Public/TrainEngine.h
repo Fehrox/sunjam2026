@@ -6,10 +6,9 @@
 #include "TrainEngine.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTGFuelChangeDelegate, float, CurrentFuel, float, MaxFuel);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTGTrainDerailedDelegate);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class TRAINGAME_API UTrainEngineComponent : public UBoxComponent, public IInteractable
+class TRAINGAME_API UTrainEngineComponent : public UBoxComponent
 {
 	GENERATED_BODY()
 
@@ -22,9 +21,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Engine")
 	FTGFuelChangeDelegate OnFuelAdded;
-
-	UPROPERTY(BlueprintAssignable, Category = "Engine")
-	FTGTrainDerailedDelegate OnDerailed;
 
 protected:
 	virtual void BeginPlay() override;
@@ -40,12 +36,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Engine")
 	float ConsumptionRate = 2.0f;
-
-	// IInteractable interface
-	virtual void Interact_Implementation(AActor* Interactor) override;
-	virtual FText GetInteractionName_Implementation() const override;
-	virtual int32 GetInteractionPriority_Implementation() const override { return 5; }
-	// End IInteractable interface
 
 	UFUNCTION(BlueprintPure, Category = "Engine")
 	float GetFuelRatio() const { return CurrentFuel / MaxFuel; }

@@ -119,7 +119,7 @@ void ATrainResource::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 			UTrainResourceData* Data = ResourceData.LoadSynchronous();
 			if (Data && Data->FuelValue > 0)
 			{
-				EngineComp->AddFuel(Data->FuelValue);
+				//EngineComp->AddFuel(Data->FuelValue);
 				OnResourceUsedForFuel.Broadcast(EngineComp->CurrentFuel, EngineComp->MaxFuel);
 				Destroy();
 				return;
@@ -136,6 +136,7 @@ void ATrainResource::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		if (TrainCar->TryStoreResource(this))
 		{
+			OnResourceStored.Broadcast(TrainCar->StoredResources.Num());
 			return;
 		}
 	}
@@ -147,7 +148,8 @@ void ATrainResource::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 			UTrainResourceData* Data = ResourceData.LoadSynchronous();
 			if (Data && Data->FuelValue > 0)
 			{
-				EngineComp->AddFuel(Data->FuelValue);
+				//EngineComp->AddFuel(Data->FuelValue);
+				OnResourceUsedForFuel.Broadcast(EngineComp->CurrentFuel, EngineComp->MaxFuel);
 				Destroy();
 				return;
 			}

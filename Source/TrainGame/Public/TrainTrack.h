@@ -33,6 +33,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visuals")
 	float TrackMeshDistance = 1000.0f;
 
+	/** Indices of meshes along the track to skip rendering */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visuals")
+	TArray<int32> SkipMeshIndices;
+
 	// Array of possible next tracks (for switches)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Track")
 	TArray<ATrainTrack*> NextTracks;

@@ -48,6 +48,11 @@ void ATrainTrack::UpdateSplineMeshes()
 
 	for (int32 i = 0; i < NumMeshes; ++i)
 	{
+		if (SkipMeshIndices.Contains(i))
+		{
+			continue;
+		}
+
 		USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(this);
 		SplineMesh->SetMobility(EComponentMobility::Movable); // or Static if the track is static
 		SplineMesh->SetStaticMesh(TrackMesh);

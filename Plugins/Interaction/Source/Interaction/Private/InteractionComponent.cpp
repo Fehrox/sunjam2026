@@ -168,6 +168,13 @@ void UInteractionComponent::UpdateInteractionTarget()
 		CurrentTarget = NewTarget;
 
 		OnInteractionFocusChange.Broadcast(CurrentTarget);
+
+		UActorComponent* InteractableComponent = nullptr;
+		if (CurrentTarget && !CurrentTarget->Implements<UInteractable>())
+		{
+			InteractableComponent = CurrentTarget->FindComponentByInterface(UInteractable::StaticClass());
+		}
+		OnInteractionComponentFocusChange.Broadcast(InteractableComponent);
 		
 		if (CurrentTarget)
 		{

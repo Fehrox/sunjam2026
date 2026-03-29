@@ -62,8 +62,27 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void Interact();
 
+	/** Zoom camera based on character being indoors */
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	void SetIndoors(bool bInIndoors);
+
 private:
 	UPROPERTY()
 	class ATrainResource* HeldResource = nullptr;
+
+	/** Default camera boom target arm length */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	float DefaultZoomDistance = 800.f;
+
+	/** Target arm length when character is indoors */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	float IndoorZoomDistance = 400.f;
+
+	/** Zoom interpolation speed */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera", meta = (AllowPrivateAccess = "true"))
+	float ZoomInterpSpeed = 5.f;
+
+	/** Whether character is currently indoors */
+	bool bIsIndoors = false;
 };
 

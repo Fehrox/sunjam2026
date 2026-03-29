@@ -1,8 +1,6 @@
 #include "TrainEngine.h"
 #include "TrainResource.h"
 #include "TrainResourceData.h"
-#include "Bridge.h"
-#include "Train.h"
 
 UTrainEngineComponent::UTrainEngineComponent()
 {
@@ -33,19 +31,6 @@ void UTrainEngineComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	}
 }
 
-void UTrainEngineComponent::Interact_Implementation(AActor* Interactor)
-{
-	// Logic for adding fuel to the engine when interacted with.
-	// Typically, the player would need to have a fuel item and that would be consumed.
-	// For simplicity in this step, let's assume interacting adds a fixed amount if possible.
-	//AddFuel(10.0f);
-}
-
-FText UTrainEngineComponent::GetInteractionName_Implementation() const
-{
-	return NSLOCTEXT("TrainGame", "InteractEngine", "Stoke the Engine");
-}
-
 void UTrainEngineComponent::AddFuel(float Amount)
 {
 	CurrentFuel = FMath::Clamp(CurrentFuel + Amount, 0.0f, MaxFuel);
@@ -61,18 +46,7 @@ void UTrainEngineComponent::OnHit(UPrimitiveComponent* HitComponent, AActor* Oth
 		if (Data && Data->FuelValue > 0)
 		{
 			AddFuel(Data->FuelValue);
-			Resource->Destroy();
-		}
-	}
-	else if (ABridge* Bridge = Cast<ABridge>(OtherActor))
-	{
-		if (!Bridge->IsFullyRepaired())
-		{
-			if (ATrain* Train = Cast<ATrain>(GetOwner()))
-			{
-				Train->Derail();
-				OnDerailed.Broadcast();
-			}
+			//Resource->Destroy();
 		}
 	}
 }
@@ -85,18 +59,7 @@ void UTrainEngineComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 		if (Data && Data->FuelValue > 0)
 		{
 			AddFuel(Data->FuelValue);
-			Resource->Destroy();
-		}
-	}
-	else if (ABridge* Bridge = Cast<ABridge>(OtherActor))
-	{
-		if (!Bridge->IsFullyRepaired())
-		{
-			if (ATrain* Train = Cast<ATrain>(GetOwner()))
-			{
-				Train->Derail();
-				OnDerailed.Broadcast();
-			}
+			//Resource->Destroy();
 		}
 	}
 }
