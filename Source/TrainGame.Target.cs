@@ -11,5 +11,7 @@ public class TrainGameTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V6;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_7;
 		ExtraModuleNames.Add("TrainGame");
+		
+		ProjectDefinitions.Add("_MSVC_STL_VECTORIZE=0");
 	}
 }

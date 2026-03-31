@@ -71,21 +71,18 @@ void UWingFlapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	if (bAnimateWings)
 	{
-		const float PreviousTime = AnimationTime;
-		AnimationTime += DeltaTime;
+		const float PreviousPhase = AnimationPhase;
+		AnimationPhase = FMath::Fmod(AnimationPhase + DeltaTime * WingFlapSpeed, 1.0f);
 
-		if (WingFlapFrequency > 0.0f)
+		if (WingFlapSpeed > 0.0f)
 		{
-			const float PreviousCycle = PreviousTime * WingFlapFrequency;
-			const float CurrentCycle = AnimationTime * WingFlapFrequency;
-
-			if (FMath::FloorToInt(PreviousCycle) != FMath::FloorToInt(CurrentCycle))
+			if (AnimationPhase < PreviousPhase)
 			{
 				OnFlapEnd.Broadcast();
 				OnWingFlap.Broadcast();
 				OnFlapStart.Broadcast();
 			}
-			else if (FMath::FloorToInt(PreviousCycle * 2.0f) != FMath::FloorToInt(CurrentCycle * 2.0f))
+			else if (PreviousPhase < 0.5f && AnimationPhase >= 0.5f)
 			{
 				OnFlap.Broadcast();
 			}
@@ -93,7 +90,7 @@ void UWingFlapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	}
 
 	const float FlapAngleDegrees = bAnimateWings
-		? 0.5f * WingFlapArcDegrees * FMath::Sin(AnimationTime * WingFlapFrequency * UE_TWO_PI)
+		? 0.5f * WingFlapArcDegrees * FMath::Sin(AnimationPhase * UE_TWO_PI)
 		: 0.0f;
 
 	UpdateWingComponent(LeftWingState, FlapAngleDegrees * LeftWingAngleMultiplier);

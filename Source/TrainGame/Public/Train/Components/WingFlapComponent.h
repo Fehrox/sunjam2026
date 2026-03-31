@@ -43,7 +43,7 @@ public:
 	float WingFlapArcDegrees = 90.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wing Flap", meta = (ClampMin = "0.0", UIMin = "0.0"))
-	float WingFlapFrequency = 1.0f;
+	float WingFlapSpeed = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wing Flap")
 	float LeftWingAngleMultiplier = -1.0f;
@@ -78,5 +78,5 @@ private:
 
 	FWingFlapResolvedComponentState LeftWingState;
 	FWingFlapResolvedComponentState RightWingState;
-	float AnimationTime = 0.0f;
+	float AnimationPhase = 0.0f;
 };
