@@ -14,13 +14,14 @@ ATrainTrack::ATrainTrack()
 void ATrainTrack::BeginPlay()
 {
 	Super::BeginPlay();
+	UpdateSplineMeshes();
 }
 
 void ATrainTrack::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
-
 	UpdateSplineMeshes();
+	
 }
 
 void ATrainTrack::UpdateSplineMeshes()
@@ -55,6 +56,7 @@ void ATrainTrack::UpdateSplineMeshes()
 
 		USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(this);
 		SplineMesh->SetMobility(EComponentMobility::Movable); // or Static if the track is static
+		SplineMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		SplineMesh->SetStaticMesh(TrackMesh);
 		if (TrackMaterial)
 		{

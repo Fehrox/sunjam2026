@@ -71,7 +71,25 @@ void UWingFlapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	if (bAnimateWings)
 	{
+		const float PreviousTime = AnimationTime;
 		AnimationTime += DeltaTime;
+
+		if (WingFlapFrequency > 0.0f)
+		{
+			const float PreviousCycle = PreviousTime * WingFlapFrequency;
+			const float CurrentCycle = AnimationTime * WingFlapFrequency;
+
+			if (FMath::FloorToInt(PreviousCycle) != FMath::FloorToInt(CurrentCycle))
+			{
+				OnFlapEnd.Broadcast();
+				OnWingFlap.Broadcast();
+				OnFlapStart.Broadcast();
+			}
+			else if (FMath::FloorToInt(PreviousCycle * 2.0f) != FMath::FloorToInt(CurrentCycle * 2.0f))
+			{
+				OnFlap.Broadcast();
+			}
+		}
 	}
 
 	const float FlapAngleDegrees = bAnimateWings

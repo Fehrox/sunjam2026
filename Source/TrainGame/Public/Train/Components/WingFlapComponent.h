@@ -7,6 +7,8 @@
 
 class USceneComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWingFlapDelegate);
+
 struct FWingFlapResolvedComponentState
 {
 	TWeakObjectPtr<USceneComponent> Component;
@@ -57,6 +59,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Wing Flap")
 	void RefreshWingReferences();
+
+	UPROPERTY(BlueprintAssignable, Category = "Wing Flap")
+	FOnWingFlapDelegate OnWingFlap;
+
+	UPROPERTY(BlueprintAssignable, Category = "Wing Flap")
+	FOnWingFlapDelegate OnFlapStart;
+
+	UPROPERTY(BlueprintAssignable, Category = "Wing Flap")
+	FOnWingFlapDelegate OnFlap;
+
+	UPROPERTY(BlueprintAssignable, Category = "Wing Flap")
+	FOnWingFlapDelegate OnFlapEnd;
 
 private:
 	void CacheWingReference(const FComponentReference& WingReference, FWingFlapResolvedComponentState& OutWingState, const TCHAR* WingLabel) const;
